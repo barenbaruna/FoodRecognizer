@@ -100,25 +100,45 @@ class _ResultBodyState extends State<_ResultBody> {
                     child: Divider(),
                   ),
 
-                  // Nutrition (Gemini).
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                    child: Consumer<GeminiController>(
-                      builder: (context, controller, _) {
-                        return _buildNutritionSection(controller);
-                      },
+                  if (resultController.isNotFood)
+                    const Padding(
+                      padding: EdgeInsets.all(16.0),
+                      child: Card(
+                        color: Colors.orangeAccent,
+                        child: Padding(
+                          padding: EdgeInsets.all(16.0),
+                          child: Text(
+                            "⚠️ Sepertinya gambar ini bukan makanan secara spesifik (Keyakinan < 15%).\n\nPencarian nutrisi dan resep dihentikan untuk menghemat penggunaan API API.",
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black87,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                      ),
+                    )
+                  else ...[
+                    // Nutrition (Gemini).
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                      child: Consumer<GeminiController>(
+                        builder: (context, controller, _) {
+                          return _buildNutritionSection(controller);
+                        },
+                      ),
                     ),
-                  ),
 
-                  // Recipe (MealDB).
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                    child: Consumer<MealDbController>(
-                      builder: (context, controller, _) {
-                        return _buildRecipeSection(controller);
-                      },
+                    // Recipe (MealDB).
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                      child: Consumer<MealDbController>(
+                        builder: (context, controller, _) {
+                          return _buildRecipeSection(controller);
+                        },
+                      ),
                     ),
-                  ),
+                  ],
 
                   const SizedBox(height: 32),
                 ],

@@ -24,6 +24,9 @@ class ResultController extends ChangeNotifier {
   String _loadingMessage = '';
   String get loadingMessage => _loadingMessage;
 
+  bool _isNotFood = false;
+  bool get isNotFood => _isNotFood;
+
   /// Runs the full analysis pipeline:
   /// 1. Classifies the image via ML.
   /// 2. Fetches nutrition and recipe data concurrently.
@@ -41,13 +44,17 @@ class ResultController extends ChangeNotifier {
     final topResult = _mlController.topResult;
 
     if (topResult != null) {
-      _loadingMessage = 'Fetching data for ${topResult.foodName}...';
-      notifyListeners();
+      if (topResult.confidence < 0.15) {
+        _isNotFood = true;
+      } else {
+        _loadingMessage = 'Fetching data for ${topResult.foodName}...';
+        notifyListeners();
 
-      await Future.wait([
-        _geminiController.fetchNutrition(topResult.foodName),
-        _mealDbController.fetchMeal(topResult.foodName),
-      ]);
+        await Future.wait([
+          _geminiController.fetchNutrition(topResult.foodName),
+          _mealDbController.fetchMeal(topResult.foodName),
+        ]);
+      }
     }
 
     _isLoading = false;
